@@ -1,0 +1,32 @@
+{
+  "name": "indexeddb-export-import",
+  "version": "1.0.0",
+  "description": "Export/import an IndexedDB database to/from JSON ",
+  "main": "index.js",
+  "scripts": {
+    "test": "./node_modules/mocha/bin/mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Polarisation/indexeddb-export-import.git"
+  },
+  "keywords": [
+    "IndexedDB",
+    "JSON",
+    "import",
+    "export",
+    "serialize",
+    "deserialize"
+  ],
+  "author": "Justin Emery",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Polarisation/indexeddb-export-import/issues"
+  },
+  "homepage": "https://github.com/Polarisation/indexeddb-export-import#readme",
+  "devDependencies": {
+    "dexie": "^1.5.1",
+    "fake-indexeddb": "^1.0.8",
+    "mocha": "^3.2.0"
+  }
+}

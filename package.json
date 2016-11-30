@@ -28,5 +28,8 @@
     "dexie": "^1.5.1",
     "fake-indexeddb": "^1.0.8",
     "mocha": "^3.2.0"
+  },
+  "dependencies": {
+    "underscore": "^1.8.3"
   }
 }

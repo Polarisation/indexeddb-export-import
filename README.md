@@ -4,6 +4,7 @@ During development and testing it may be useful to be able to save and load the 
 
 I wrote this as a Node.js module for use with a desktop Electron app - which has access to both the IndexedDB API and Node.js. But there are minimal dependencies so it should be easy to reuse the functions in a browser environment where Node.js is not available.
 
+[![Build Status](https://travis-ci.org/Polarisation/indexeddb-export-import.svg?branch=master)](https://travis-ci.org/Polarisation/indexeddb-export-import)
 [![NPM](https://nodei.co/npm/indexeddb-export-import.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/indexeddb-export-import/)
 
 ## Install

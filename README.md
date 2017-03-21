@@ -11,7 +11,7 @@ I wrote this as a Node.js module for use with a desktop [https://electron.atom.i
 
 You will need an open [IDBDatabase](https://developer.mozilla.org/en-US/docs/Web/API/IDBDatabase) connection. 
 
-The follwing example exports a database, clears all object stores, then re-import the database. It uses [Dexie.js](https://github.com/dfahlander/Dexie.js) to initiate the database, but this is not required.
+The follwing example exports a database, clears all object stores, then re-imports the database. It uses [Dexie.js](https://github.com/dfahlander/Dexie.js) to initiate the database, but this is not required.
 
 	var Dexie = require("Dexie");
 	var IDBExportImport = require("indexeddb-export-import")

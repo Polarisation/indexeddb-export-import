@@ -24,14 +24,14 @@ The follwing example exports a database, clears all object stores, then re-impor
 		var idb_db = db.backendDB(); // get native IDBDatabase object from Dexie wrapper
 
 		// export to JSON, clear database, and import from JSON
-		IDBExportImport.exportToJson(idb_db, function(err, jsonString) {
+		IDBExportImport.exportToJsonString(idb_db, function(err, jsonString) {
 			if(err)
 				console.error(err);
 			else {
 				console.log("Exported as JSON: " + jsonString);
 				IDBExportImport.clearDatabase(idb_db, function(err) {
 					if(!err) // cleared data successfully
-						IDBExportImport.importFromJson(idb_db, jsonString, function(err) {
+						IDBExportImport.importFromJsonString(idb_db, jsonString, function(err) {
 							if (!err)
 								console.log("Imported data successfully");
 						});

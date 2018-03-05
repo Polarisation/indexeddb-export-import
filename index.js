@@ -1,4 +1,5 @@
-var _ = require("underscore");
+var forEach = require('lodash.foreach');
+var keys = require('lodash.keys');
 
 /**
  * Export all data from an IndexedDB database
@@ -14,7 +15,7 @@ function exportToJsonString(idb_db, cb) {
 		transaction.onerror = function(event) {
 			cb(event);
 		};
-		_.each(idb_db.objectStoreNames, function(storeName) {				
+		forEach(idb_db.objectStoreNames, function(storeName) {				
 			var allObjects = [];
 			transaction.objectStore(storeName).openCursor().onsuccess = function(event) {
 				var cursor = event.target.result;
@@ -23,7 +24,7 @@ function exportToJsonString(idb_db, cb) {
 					cursor.continue();
 				} else {
 					exportObject[storeName] = allObjects;
-					if(idb_db.objectStoreNames.length == _.keys(exportObject).length) {
+					if(idb_db.objectStoreNames.length == keys(exportObject).length) {
 						cb(null, JSON.stringify(exportObject));
 					}
 				}
@@ -46,15 +47,15 @@ function importFromJsonString(idb_db, jsonString, cb) {
 		cb(event);
 	}
 	var importObject = JSON.parse(jsonString);
-	_.each(idb_db.objectStoreNames, function(storeName) {
+	forEach(idb_db.objectStoreNames, function(storeName) {
 		var count = 0;
-		_.each(importObject[storeName], function(toAdd) {
+		forEach(importObject[storeName], function(toAdd) {
 			var request = transaction.objectStore(storeName).add(toAdd);
 			request.onsuccess = function(event) {
 					count++;
 					if(count == importObject[storeName].length) { // added all objects for this store
 						delete importObject[storeName];
-						if(_.keys(importObject).length == 0) // added all object stores
+						if(keys(importObject).length == 0) // added all object stores
 							cb(null);
 					}
 				}
@@ -74,7 +75,7 @@ function clearDatabase(idb_db, cb) {
 		cb(event);
 	}
 	var count = 0;
-	_.each(idb_db.objectStoreNames, function(storeName) {
+	forEach(idb_db.objectStoreNames, function(storeName) {
 		transaction.objectStore(storeName).clear().onsuccess = function() {
 			count++;
 			if(count == idb_db.objectStoreNames.length) // cleared all object stores

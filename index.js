@@ -47,7 +47,7 @@ function importFromJsonString(idb_db, jsonString, cb) {
 	}
 	var importObject = JSON.parse(jsonString);
 	_.each(idb_db.objectStoreNames, function(storeName) {
-		let count = 0;
+		var count = 0;
 		_.each(importObject[storeName], function(toAdd) {
 			var request = transaction.objectStore(storeName).add(toAdd);
 			request.onsuccess = function(event) {
@@ -73,7 +73,7 @@ function clearDatabase(idb_db, cb) {
 	transaction.onerror = function(event) {
 		cb(event);
 	}
-	let count = 0;
+	var count = 0;
 	_.each(idb_db.objectStoreNames, function(storeName) {
 		transaction.objectStore(storeName).clear().onsuccess = function() {
 			count++;

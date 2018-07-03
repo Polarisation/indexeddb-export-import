@@ -1,5 +1,7 @@
 # indexeddb-export-import - JSON export/import for IndexedDB
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/Polarisation/indexeddb-export-import.svg)](https://greenkeeper.io/)
+
 During development and testing it may be useful to be able to save and load the contents of an IndexedDB database.
 
 I wrote this as a Node.js module for use with a desktop [https://electron.atom.io/](Electron) app - which has access to both the IndexedDB API and Node.js. But there are minimal dependencies so it should be easy to reuse the functions in a browser environment where Node.js is not available.

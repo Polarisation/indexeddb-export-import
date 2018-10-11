@@ -12,7 +12,7 @@ describe("IDBExportImport", function() {
 				var idb_db = db.backendDB(); // get native IDBDatabase object from Dexie wrapper
 				IDBExportImport.exportToJsonString(idb_db, function(err, jsonString) {
 					assert.ifError(err);
-					assert.equal(jsonString, "{}")
+					assert.equal(jsonString, "{}");
 					done();
 				});
 			}).catch(function(e) {
@@ -54,7 +54,9 @@ describe("IDBExportImport", function() {
 			IDBExportImport.exportToJsonString(idb_db, function(err, jsonString) {
 				assert.ifError(err);
 				console.log("Exported as JSON: " + jsonString);
-				assert.equal(jsonString, '{"things":[{"thing_name":"First thing","thing_description":"This is the first thing","id":1},{"thing_name":"Second thing","thing_description":"This is the second thing","id":2}]}')
+				assert.equal(jsonString, '{"things":['
+					+ '{"thing_name":"First thing","thing_description":"This is the first thing","id":1},'
+					+ '{"thing_name":"Second thing","thing_description":"This is the second thing","id":2}]}');
 
 				IDBExportImport.clearDatabase(idb_db, function(err) {
 					assert.ifError(err);
@@ -63,11 +65,13 @@ describe("IDBExportImport", function() {
 					IDBExportImport.importFromJsonString(idb_db, jsonString, function(err) {
 						assert.ifError(err);
 						console.log("Imported data successfully");
-						
+
 						IDBExportImport.exportToJsonString(idb_db, function(err, jsonString) {
 							assert.ifError(err);
 							console.log("Exported as JSON: " + jsonString);
-							assert.equal(jsonString, '{"things":[{"thing_name":"First thing","thing_description":"This is the first thing","id":1},{"thing_name":"Second thing","thing_description":"This is the second thing","id":2}]}')
+							assert.equal(jsonString, '{"things":['
+								+ '{"thing_name":"First thing","thing_description":"This is the first thing","id":1}'
+								+ ',{"thing_name":"Second thing","thing_description":"This is the second thing","id":2}]}');
 
 							done();
 						});

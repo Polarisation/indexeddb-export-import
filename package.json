@@ -25,9 +25,9 @@
   },
   "homepage": "https://github.com/Polarisation/indexeddb-export-import#readme",
   "devDependencies": {
-    "dexie": "^2.0.2",
-    "fake-indexeddb": "^2.0.3",
-    "mocha": "^5.1.1"
+    "dexie": "^2.0.4",
+    "fake-indexeddb": "^2.0.4",
+    "mocha": "^5.2.0"
   },
   "dependencies": {
     "lodash.foreach": "^4.5.0",

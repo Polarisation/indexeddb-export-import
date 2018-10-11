@@ -3,19 +3,19 @@ var keys = require('lodash.keys');
 
 /**
  * Export all data from an IndexedDB database
- * @param {IDBDatabase} idb_db
- * @param {function(Object, string)} cb - callback with signature (error, jsonString)
+ * @param {IDBDatabase} idbDatabase - to export from
+ * @param {function(Object, <string|void>)} cb - callback with signature (error, jsonString)
  */
-function exportToJsonString(idb_db, cb) {
+function exportToJsonString(idbDatabase, cb) {
 	var exportObject = {};
-	if(idb_db.objectStoreNames.length == 0)
+	if(idbDatabase.objectStoreNames.length === 0)
 		cb(null, JSON.stringify(exportObject));
 	else {
-		var transaction = idb_db.transaction(idb_db.objectStoreNames, "readonly");
+		var transaction = idbDatabase.transaction(idbDatabase.objectStoreNames, "readonly");
 		transaction.onerror = function(event) {
-			cb(event);
+			cb(event, null);
 		};
-		forEach(idb_db.objectStoreNames, function(storeName) {				
+		forEach(idbDatabase.objectStoreNames, function(storeName) {
 			var allObjects = [];
 			transaction.objectStore(storeName).openCursor().onsuccess = function(event) {
 				var cursor = event.target.result;
@@ -24,7 +24,7 @@ function exportToJsonString(idb_db, cb) {
 					cursor.continue();
 				} else {
 					exportObject[storeName] = allObjects;
-					if(idb_db.objectStoreNames.length == keys(exportObject).length) {
+					if(idbDatabase.objectStoreNames.length === keys(exportObject).length) {
 						cb(null, JSON.stringify(exportObject));
 					}
 				}
@@ -36,26 +36,26 @@ function exportToJsonString(idb_db, cb) {
 /**
  * Import data from JSON into an IndexedDB database. This does not delete any existing data
  *  from the database, so keys could clash
- * 
- * @param {IDBDatabase} idb_db
+ *
+ * @param {IDBDatabase} idbDatabase - to import into
  * @param {string} jsonString - data to import, one key per object store
  * @param {function(Object)} cb - callback with signature (error), where error is null on success
  */
-function importFromJsonString(idb_db, jsonString, cb) {
-	var transaction = idb_db.transaction(idb_db.objectStoreNames, "readwrite");
+function importFromJsonString(idbDatabase, jsonString, cb) {
+	var transaction = idbDatabase.transaction(idbDatabase.objectStoreNames, "readwrite");
 	transaction.onerror = function(event) {
 		cb(event);
-	}
+	};
 	var importObject = JSON.parse(jsonString);
-	forEach(idb_db.objectStoreNames, function(storeName) {
+	forEach(idbDatabase.objectStoreNames, function(storeName) {
 		var count = 0;
 		forEach(importObject[storeName], function(toAdd) {
 			var request = transaction.objectStore(storeName).add(toAdd);
 			request.onsuccess = function(event) {
 					count++;
-					if(count == importObject[storeName].length) { // added all objects for this store
+					if(count === importObject[storeName].length) { // added all objects for this store
 						delete importObject[storeName];
-						if(keys(importObject).length == 0) // added all object stores
+						if(keys(importObject).length === 0) // added all object stores
 							cb(null);
 					}
 				}
@@ -65,20 +65,20 @@ function importFromJsonString(idb_db, jsonString, cb) {
 
 /**
  * Clears a database of all data
- * 
- * @param {IDBDatabase} idb_db
+ *
+ * @param {IDBDatabase} idbDatabase - to delete all data from
  * @param {function(Object)} cb - callback with signature (error), where error is null on success
  */
-function clearDatabase(idb_db, cb) {
-	var transaction = idb_db.transaction(idb_db.objectStoreNames, "readwrite");
+function clearDatabase(idbDatabase, cb) {
+	var transaction = idbDatabase.transaction(idbDatabase.objectStoreNames, "readwrite");
 	transaction.onerror = function(event) {
 		cb(event);
-	}
+	};
 	var count = 0;
-	forEach(idb_db.objectStoreNames, function(storeName) {
+	forEach(idbDatabase.objectStoreNames, function(storeName) {
 		transaction.objectStore(storeName).clear().onsuccess = function() {
 			count++;
-			if(count == idb_db.objectStoreNames.length) // cleared all object stores
+			if(count === idbDatabase.objectStoreNames.length) // cleared all object stores
 				cb(null);
 		};
 	});
@@ -88,4 +88,4 @@ module.exports = {
 	exportToJsonString : exportToJsonString,
 	importFromJsonString : importFromJsonString,
 	clearDatabase : clearDatabase
-}
+};

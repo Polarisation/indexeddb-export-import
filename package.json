@@ -27,7 +27,7 @@
   "devDependencies": {
     "dexie": "^2.0.4",
     "fake-indexeddb": "^2.0.4",
-    "mocha": "^5.2.0"
+    "mocha": "^6.0.0"
   },
   "dependencies": {
     "lodash.foreach": "^4.5.0",

@@ -228,9 +228,3 @@ function clearDatabase(idbDatabase, cb) {
 		};
 	});
 }
-
-module.exports = {
-	exportToJsonString : exportToJsonString,
-	importFromJsonString : importFromJsonString,
-	clearDatabase : clearDatabase
-};

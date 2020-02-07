@@ -1,6 +1,3 @@
-var forEach = require('lodash.foreach');
-var keys = require('lodash.keys');
-
 /**
  * Export all data from an IndexedDB database
  * @param {IDBDatabase} idbDatabase - to export from
@@ -15,7 +12,7 @@ function exportToJsonString(idbDatabase, cb) {
 		transaction.onerror = function(event) {
 			cb(event, null);
 		};
-		forEach(idbDatabase.objectStoreNames, function(storeName) {
+		Array.from(idbDatabase.objectStoreNames).forEach(function(storeName) {
 			var allObjects = [];
 			transaction.objectStore(storeName).openCursor().onsuccess = function(event) {
 				var cursor = event.target.result;
@@ -24,7 +21,7 @@ function exportToJsonString(idbDatabase, cb) {
 					cursor.continue();
 				} else {
 					exportObject[storeName] = allObjects;
-					if(idbDatabase.objectStoreNames.length === keys(exportObject).length) {
+					if(idbDatabase.objectStoreNames.length === Object.keys(exportObject).length) {
 						cb(null, JSON.stringify(exportObject));
 					}
 				}
@@ -47,15 +44,15 @@ function importFromJsonString(idbDatabase, jsonString, cb) {
 		cb(event);
 	};
 	var importObject = JSON.parse(jsonString);
-	forEach(idbDatabase.objectStoreNames, function(storeName) {
+	Array.from(idbDatabase.objectStoreNames).forEach(function(storeName) {
 		var count = 0;
-		forEach(importObject[storeName], function(toAdd) {
+		Array.from(importObject[storeName]).forEach(function(toAdd) {
 			var request = transaction.objectStore(storeName).add(toAdd);
 			request.onsuccess = function(event) {
 					count++;
 					if(count === importObject[storeName].length) { // added all objects for this store
 						delete importObject[storeName];
-						if(keys(importObject).length === 0) // added all object stores
+						if(Object.keys(importObject).length === 0) // added all object stores
 							cb(null);
 					}
 				}
@@ -75,7 +72,7 @@ function clearDatabase(idbDatabase, cb) {
 		cb(event);
 	};
 	var count = 0;
-	forEach(idbDatabase.objectStoreNames, function(storeName) {
+	Array.from(idbDatabase.objectStoreNames).forEach(function(storeName) {
 		transaction.objectStore(storeName).clear().onsuccess = function() {
 			count++;
 			if(count === idbDatabase.objectStoreNames.length) // cleared all object stores

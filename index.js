@@ -14,14 +14,11 @@ function exportToJsonString(idbDatabase, cb) {
       idbDatabase.objectStoreNames,
       "readonly"
     );
-    transaction.onerror = function(event) {
-      cb(event, null);
-    };
-    Array.from(idbDatabase.objectStoreNames).forEach(function(storeName) {
+    transaction.onerror = event => cb(event, null);
+
+    Array.from(idbDatabase.objectStoreNames).forEach(storeName => {
       let allObjects = [];
-      transaction.objectStore(storeName).openCursor().onsuccess = function(
-        event
-      ) {
+      transaction.objectStore(storeName).openCursor().onsuccess = event => {
         const cursor = event.target.result;
         if (cursor) {
           allObjects.push(cursor.value);
@@ -53,15 +50,14 @@ function importFromJsonString(idbDatabase, jsonString, cb) {
     idbDatabase.objectStoreNames,
     "readwrite"
   );
-  transaction.onerror = function(event) {
-    cb(event);
-  };
+  transaction.onerror = event => cb(event);
+
   let importObject = JSON.parse(jsonString);
-  Array.from(idbDatabase.objectStoreNames).forEach(function(storeName) {
+  Array.from(idbDatabase.objectStoreNames).forEach(storeName => {
     let count = 0;
-    Array.from(importObject[storeName]).forEach(function(toAdd) {
+    Array.from(importObject[storeName]).forEach(toAdd => {
       const request = transaction.objectStore(storeName).add(toAdd);
-      request.onsuccess = function() {
+      request.onsuccess = () => {
         count++;
         if (count === importObject[storeName].length) {
           // added all objects for this store
@@ -86,12 +82,11 @@ function clearDatabase(idbDatabase, cb) {
     idbDatabase.objectStoreNames,
     "readwrite"
   );
-  transaction.onerror = function(event) {
-    cb(event);
-  };
+  transaction.onerror = event => cb(event);
+
   let count = 0;
   Array.from(idbDatabase.objectStoreNames).forEach(function(storeName) {
-    transaction.objectStore(storeName).clear().onsuccess = function() {
+    transaction.objectStore(storeName).clear().onsuccess = () => {
       count++;
       if (count === idbDatabase.objectStoreNames.length)
         // cleared all object stores

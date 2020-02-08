@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 'use strict';
 /**
  * Export all data from an IndexedDB database

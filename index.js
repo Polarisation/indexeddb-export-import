@@ -3,7 +3,7 @@
 /**
  * Export all data from an IndexedDB database
  * @param {IDBDatabase} idbDatabase - to export from
- * @param {function(Object, void>)} cb - callback with signature (error, jsonString)
+ * @param {function(Object?, string?)} cb - callback with signature (error, jsonString)
  */
 function exportToJsonString(idbDatabase, cb) {
   const exportObject = {};

@@ -3,6 +3,8 @@ var Dexie = require("dexie");
 var IDBExportImport = require("../index");
 var assert = require("assert");
 
+/* eslint-env mocha */
+
 describe("IDBExportImport", function() {
 	describe("#exportToJsonString()", function() {
 		it("DB with no object stores should export an empty string", function(done) {
@@ -47,7 +49,7 @@ describe("IDBExportImport", function() {
 
 		var thingsToAdd = [{thing_name : "First thing", thing_description: "This is the first thing"},
 												{thing_name : "Second thing", thing_description: "This is the second thing"}];
-		db.things.bulkAdd(thingsToAdd).then(function(lastKey) {
+		db.things.bulkAdd(thingsToAdd).then(function() {
 			var idb_db = db.backendDB(); // get native IDBDatabase object from Dexie wrapper
 
 			// export to JSON, clear database, and import from JSON

@@ -6,18 +6,18 @@
 "use strict";
 
 function exportToJsonString(idbDatabase, cb) {
-  let exportObject = {};
+  const exportObject = {};
   if (idbDatabase.objectStoreNames.length === 0)
     cb(null, JSON.stringify(exportObject));
   else {
-    let transaction = idbDatabase.transaction(
+    const transaction = idbDatabase.transaction(
       idbDatabase.objectStoreNames,
       "readonly"
     );
     transaction.onerror = event => cb(event, null);
 
     Array.from(idbDatabase.objectStoreNames).forEach(storeName => {
-      let allObjects = [];
+      const allObjects = [];
       transaction.objectStore(storeName).openCursor().onsuccess = event => {
         const cursor = event.target.result;
         if (cursor) {
@@ -52,7 +52,7 @@ function importFromJsonString(idbDatabase, jsonString, cb) {
   );
   transaction.onerror = event => cb(event);
 
-  let importObject = JSON.parse(jsonString);
+  const importObject = JSON.parse(jsonString);
   Array.from(idbDatabase.objectStoreNames).forEach(storeName => {
     let count = 0;
     Array.from(importObject[storeName]).forEach(toAdd => {

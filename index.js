@@ -97,8 +97,11 @@ function clearDatabase(idbDatabase, cb) {
   });
 }
 
-module.exports = {
-  exportToJsonString: exportToJsonString,
-  importFromJsonString: importFromJsonString,
-  clearDatabase: clearDatabase,
-};
+if (typeof module !== 'undefined' && module.exports) {
+  // We are running on Node.js so need to export the module
+  module.exports = {
+    exportToJsonString: exportToJsonString,
+    importFromJsonString: importFromJsonString,
+    clearDatabase: clearDatabase,
+  };
+}

@@ -1,33 +1,39 @@
+'use strict';
 /**
  * Export all data from an IndexedDB database
  * @param {IDBDatabase} idbDatabase - to export from
- * @param {function(Object, <string|void>)} cb - callback with signature (error, jsonString)
+ * @param {function(Object?, string?)} cb - callback with signature (error, jsonString)
  */
 function exportToJsonString(idbDatabase, cb) {
-	var exportObject = {};
-	if(idbDatabase.objectStoreNames.length === 0)
-		cb(null, JSON.stringify(exportObject));
-	else {
-		var transaction = idbDatabase.transaction(idbDatabase.objectStoreNames, "readonly");
-		transaction.onerror = function(event) {
-			cb(event, null);
-		};
-		Array.from(idbDatabase.objectStoreNames).forEach(function(storeName) {
-			var allObjects = [];
-			transaction.objectStore(storeName).openCursor().onsuccess = function(event) {
-				var cursor = event.target.result;
-				if (cursor) {
-					allObjects.push(cursor.value);
-					cursor.continue();
-				} else {
-					exportObject[storeName] = allObjects;
-					if(idbDatabase.objectStoreNames.length === Object.keys(exportObject).length) {
-						cb(null, JSON.stringify(exportObject));
-					}
-				}
-			};
-		});
-	}
+  const exportObject = {};
+  if (idbDatabase.objectStoreNames.length === 0) {
+    cb(null, JSON.stringify(exportObject));
+  } else {
+    const transaction = idbDatabase.transaction(
+        idbDatabase.objectStoreNames,
+        'readonly'
+    );
+    transaction.onerror = (event) => cb(event, null);
+
+    Array.from(idbDatabase.objectStoreNames).forEach((storeName) => {
+      const allObjects = [];
+      transaction.objectStore(storeName).openCursor().onsuccess = (event) => {
+        const cursor = event.target.result;
+        if (cursor) {
+          allObjects.push(cursor.value);
+          cursor.continue();
+        } else {
+          exportObject[storeName] = allObjects;
+          if (
+            idbDatabase.objectStoreNames.length ===
+            Object.keys(exportObject).length
+          ) {
+            cb(null, JSON.stringify(exportObject));
+          }
+        }
+      };
+    });
+  }
 }
 
 /**
@@ -39,25 +45,30 @@ function exportToJsonString(idbDatabase, cb) {
  * @param {function(Object)} cb - callback with signature (error), where error is null on success
  */
 function importFromJsonString(idbDatabase, jsonString, cb) {
-	var transaction = idbDatabase.transaction(idbDatabase.objectStoreNames, "readwrite");
-	transaction.onerror = function(event) {
-		cb(event);
-	};
-	var importObject = JSON.parse(jsonString);
-	Array.from(idbDatabase.objectStoreNames).forEach(function(storeName) {
-		var count = 0;
-		Array.from(importObject[storeName]).forEach(function(toAdd) {
-			var request = transaction.objectStore(storeName).add(toAdd);
-			request.onsuccess = function(event) {
-					count++;
-					if(count === importObject[storeName].length) { // added all objects for this store
-						delete importObject[storeName];
-						if(Object.keys(importObject).length === 0) // added all object stores
-							cb(null);
-					}
-				}
-		});
-	});
+  const transaction = idbDatabase.transaction(
+      idbDatabase.objectStoreNames,
+      'readwrite'
+  );
+  transaction.onerror = (event) => cb(event);
+
+  const importObject = JSON.parse(jsonString);
+  Array.from(idbDatabase.objectStoreNames).forEach((storeName) => {
+    let count = 0;
+    Array.from(importObject[storeName]).forEach((toAdd) => {
+      const request = transaction.objectStore(storeName).add(toAdd);
+      request.onsuccess = () => {
+        count++;
+        if (count === importObject[storeName].length) {
+          // added all objects for this store
+          delete importObject[storeName];
+          if (Object.keys(importObject).length === 0) {
+            // added all object stores
+            cb(null);
+          }
+        }
+      };
+    });
+  });
 }
 
 /**
@@ -67,22 +78,26 @@ function importFromJsonString(idbDatabase, jsonString, cb) {
  * @param {function(Object)} cb - callback with signature (error), where error is null on success
  */
 function clearDatabase(idbDatabase, cb) {
-	var transaction = idbDatabase.transaction(idbDatabase.objectStoreNames, "readwrite");
-	transaction.onerror = function(event) {
-		cb(event);
-	};
-	var count = 0;
-	Array.from(idbDatabase.objectStoreNames).forEach(function(storeName) {
-		transaction.objectStore(storeName).clear().onsuccess = function() {
-			count++;
-			if(count === idbDatabase.objectStoreNames.length) // cleared all object stores
-				cb(null);
-		};
-	});
+  const transaction = idbDatabase.transaction(
+      idbDatabase.objectStoreNames,
+      'readwrite'
+  );
+  transaction.onerror = (event) => cb(event);
+
+  let count = 0;
+  Array.from(idbDatabase.objectStoreNames).forEach(function(storeName) {
+    transaction.objectStore(storeName).clear().onsuccess = () => {
+      count++;
+      if (count === idbDatabase.objectStoreNames.length) {
+        // cleared all object stores
+        cb(null);
+      }
+    };
+  });
 }
 
 module.exports = {
-	exportToJsonString : exportToJsonString,
-	importFromJsonString : importFromJsonString,
-	clearDatabase : clearDatabase
+  exportToJsonString: exportToJsonString,
+  importFromJsonString: importFromJsonString,
+  clearDatabase: clearDatabase,
 };

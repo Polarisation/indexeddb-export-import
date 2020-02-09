@@ -1,4 +1,5 @@
 'use strict';
+
 /**
  * Export all data from an IndexedDB database
  * @param {IDBDatabase} idbDatabase - to export from

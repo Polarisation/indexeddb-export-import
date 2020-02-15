@@ -34,6 +34,5 @@
     "fake-indexeddb": "^3.0.0",
     "mocha": "^7.0.1"
   },
-  "dependencies": {},
-  "files": []
+  "dependencies": {}
 }

@@ -1,8 +1,8 @@
 # indexeddb-export-import - JSON export/import for IndexedDB
 
-During development and testing it may be useful to be able to save and load the contents of an IndexedDB database.
+[IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API) is a client-side database API available in modern browsers and [https://electron.atom.io/](Electron). During development and testing of an web / desktop app which uses IndexedDB, it can be helpful to save, load, or clear the contents of an IndexedDB database - this package provides that capability.
 
-I wrote this as a Node.js module for use with a desktop [https://electron.atom.io/](Electron) app - which has access to both the IndexedDB API and Node.js. But there are no dependencies for distribution, so it should be easy to reuse the functions in a browser environment where Node.js is not available.
+You can use **indexeddb-export-import** in a Node.js environment imported as a module (eg. for use with an Electron app). You may also use it in a browser environment by simply including via a `<script>` tag.
 
 [![Build Status](https://travis-ci.org/Polarisation/indexeddb-export-import.svg?branch=master)](https://travis-ci.org/Polarisation/indexeddb-export-import)
 [![NPM](https://nodei.co/npm/indexeddb-export-import.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/indexeddb-export-import/)

@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.0.2
+
+ - Update dependencies (fixes potential security vulnerabilities)
+
 ## v2.0.1
 
  - Including extra files in NPM distribution as excluding them impacts quality score

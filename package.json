@@ -28,7 +28,7 @@
   },
   "homepage": "https://github.com/Polarisation/indexeddb-export-import#readme",
   "devDependencies": {
-    "dexie": "^2.0.4",
+    "dexie": "^3.0.0",
     "eslint": "^6.8.0",
     "eslint-config-google": "^0.14.0",
     "fake-indexeddb": "^3.0.0",

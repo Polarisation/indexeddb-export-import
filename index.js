@@ -55,20 +55,28 @@ function importFromJsonString(idbDatabase, jsonString, cb) {
   const importObject = JSON.parse(jsonString);
   Array.from(idbDatabase.objectStoreNames).forEach((storeName) => {
     let count = 0;
-    Array.from(importObject[storeName]).forEach((toAdd) => {
-      const request = transaction.objectStore(storeName).add(toAdd);
-      request.onsuccess = () => {
-        count++;
-        if (count === importObject[storeName].length) {
-          // added all objects for this store
-          delete importObject[storeName];
-          if (Object.keys(importObject).length === 0) {
-            // added all object stores
-            cb(null);
+    if (Array.from(importObject[storeName]).length > 0) {
+      Array.from(importObject[storeName]).forEach((toAdd) => {
+        const request = transaction.objectStore(storeName).add(toAdd);
+        request.onsuccess = () => {
+          count++;
+          if (count === importObject[storeName].length) {
+            // added all objects for this store
+            delete importObject[storeName];
+            if (Object.keys(importObject).length === 0) {
+              // added all object stores
+              cb(null);
+            }
           }
-        }
-      };
-    });
+        };
+      });
+    } else {
+       delete importObject[storeName];
+       if (Object.keys(importObject).length === 0) {
+         // added all object stores
+         cb(null);
+       }
+    }
   });
 }
 

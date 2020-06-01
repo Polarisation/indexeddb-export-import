@@ -16,7 +16,9 @@ function exportToJsonString(idbDatabase, cb) {
     );
     transaction.onerror = (event) => cb(event, null);
 
-    Array.from(idbDatabase.objectStoreNames).forEach((storeName) => {
+    const objectStoreNames = new Set(idbDatabase.objectStoreNames)
+
+    Array.from(objectStoreNames).forEach((storeName) => {
       const allObjects = [];
       transaction.objectStore(storeName).openCursor().onsuccess = (event) => {
         const cursor = event.target.result;
@@ -26,7 +28,7 @@ function exportToJsonString(idbDatabase, cb) {
         } else {
           exportObject[storeName] = allObjects;
           if (
-            idbDatabase.objectStoreNames.length ===
+            objectStoreNames.length ===
             Object.keys(exportObject).length
           ) {
             cb(null, JSON.stringify(exportObject));

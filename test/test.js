@@ -4,6 +4,8 @@ const Dexie = require('dexie');
 const IDBExportImport = require('../index');
 const assert = require('assert');
 
+var mock = require('./data/keyComposite.json'); 
+
 /* eslint-env mocha */
 
 describe('IDBExportImport', function() {
@@ -84,5 +86,40 @@ describe('IDBExportImport', function() {
     }).catch(Dexie.BulkError, function(e) {
       assert.ifError(e);
     });
+  });
+  it('Should import and export the database with composite keys and empty keys', function(done) {
+    const db = new Dexie('myDB', {indexedDB: fakeIndexedDB});
+    db.version(1).stores({
+      colors:"id++,name,info",
+      shapes:"id++,name",
+      color_shape:"[shape+color]",
+      empty:"id++"
+    });
+
+    db.open().catch(function (e) {
+      console.error("Open failed: " + e.stack);
+    })
+
+    db.transaction('r', 
+      db.colors,
+      db.shapes, 
+      db.color_shape,
+      db.empty,
+      () => {
+        const idbDB = db.backendDB(); // get native IDBDatabase object from Dexie wrapper
+          IDBExportImport.clearDatabase(idbDB, function(err) {
+            assert.ifError(err);
+            console.log('Cleared the database');
+            mock = JSON.stringify(mock);
+            debugger
+            IDBExportImport.importFromJsonString(idbDB, mock, function(err) {
+              assert.ifError(err);
+              if (!err) {
+                console.log('Imported data successfully');
+              } 
+              done();
+            });
+          });
+      });
   });
 });

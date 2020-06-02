@@ -16,7 +16,9 @@ function exportToJsonString(idbDatabase, cb) {
     );
     transaction.onerror = (event) => cb(event, null);
 
-    Array.from(idbDatabase.objectStoreNames).forEach((storeName) => {
+    const objectStoreNames = Array.from(new Set(idbDatabase.objectStoreNames))
+
+    objectStoreNames.forEach((storeName) => {
       const allObjects = [];
       transaction.objectStore(storeName).openCursor().onsuccess = (event) => {
         const cursor = event.target.result;
@@ -26,7 +28,7 @@ function exportToJsonString(idbDatabase, cb) {
         } else {
           exportObject[storeName] = allObjects;
           if (
-            idbDatabase.objectStoreNames.length ===
+            objectStoreNames.length ===
             Object.keys(exportObject).length
           ) {
             cb(null, JSON.stringify(exportObject));
@@ -55,20 +57,31 @@ function importFromJsonString(idbDatabase, jsonString, cb) {
   const importObject = JSON.parse(jsonString);
   Array.from(idbDatabase.objectStoreNames).forEach((storeName) => {
     let count = 0;
-    Array.from(importObject[storeName]).forEach((toAdd) => {
-      const request = transaction.objectStore(storeName).add(toAdd);
-      request.onsuccess = () => {
-        count++;
-        if (count === importObject[storeName].length) {
-          // added all objects for this store
-          delete importObject[storeName];
-          if (Object.keys(importObject).length === 0) {
-            // added all object stores
-            cb(null);
+    if (importObject[storeName] && Array.from(importObject[storeName]).length > 0) {
+      Array.from(importObject[storeName]).forEach((toAdd) => {
+        const request = transaction.objectStore(storeName).add(toAdd);
+        request.onsuccess = () => {
+          count++;
+          if (count === importObject[storeName].length) {
+            // added all objects for this store
+            delete importObject[storeName];
+            if (Object.keys(importObject).length === 0) {
+              // added all object stores
+              cb(null);
+            }
           }
-        }
-      };
-    });
+        };
+        request.onerror = (event) => {
+          console.log(event);
+        };
+      });
+    } else {
+       delete importObject[storeName];
+       if (Object.keys(importObject).length === 0) {
+         // added all object stores
+         cb(null);
+       }
+    }
   });
 }
 

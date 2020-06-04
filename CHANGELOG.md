@@ -1,8 +1,13 @@
 # Changelog
 
+## v2.0.3
+
+ - Fix issue (#14) with npm package
+ - Update dev dependencies
+
 ## v2.0.2
 
- - Update dependencies (fixes potential security vulnerabilities)
+ - Update dev dependencies (fixes potential security vulnerabilities)
 
 ## v2.0.1
 

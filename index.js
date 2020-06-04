@@ -16,7 +16,7 @@ function exportToJsonString(idbDatabase, cb) {
     );
     transaction.onerror = (event) => cb(event, null);
 
-    const objectStoreNames = Array.from(new Set(idbDatabase.objectStoreNames))
+    const objectStoreNames = Array.from(new Set(idbDatabase.objectStoreNames));
 
     objectStoreNames.forEach((storeName) => {
       const allObjects = [];
@@ -76,11 +76,11 @@ function importFromJsonString(idbDatabase, jsonString, cb) {
         };
       });
     } else {
-       delete importObject[storeName];
-       if (Object.keys(importObject).length === 0) {
-         // added all object stores
-         cb(null);
-       }
+      delete importObject[storeName];
+      if (Object.keys(importObject).length === 0) {
+        // added all object stores
+        cb(null);
+      }
     }
   });
 }

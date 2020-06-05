@@ -7,9 +7,7 @@
  */
 function exportToJsonString(idbDatabase, cb) {
   const exportObject = {};
-  const size = typeof idbDatabase.objectStoreNames.length !== 'undefined' ?
-    idbDatabase.objectStoreNames.length :
-    Object.getOwnPropertyNames(idbDatabase.objectStoreNames).length;
+  const size = new Set(idbDatabase.objectStoreNames).size;
   if (size === 0) {
     cb(null, JSON.stringify(exportObject));
   } else {
@@ -100,9 +98,7 @@ function clearDatabase(idbDatabase, cb) {
       idbDatabase.objectStoreNames,
       'readwrite'
   );
-  const size = typeof idbDatabase.objectStoreNames.length !== 'undefined' ?
-    idbDatabase.objectStoreNames.length :
-    Object.getOwnPropertyNames(idbDatabase.objectStoreNames).length;
+  const size = new Set(idbDatabase.objectStoreNames).size;
   transaction.onerror = (event) => cb(event);
 
   let count = 0;

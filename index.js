@@ -56,7 +56,8 @@ function importFromJsonString(idbDatabase, jsonString, cb) {
   transaction.onerror = (event) => cb(event);
 
   const importObject = JSON.parse(jsonString);
-  Array.from(idbDatabase.objectStoreNames).forEach((storeName) => {
+  const objectStoreNames = new Set(idbDatabase.objectStoreNames);
+  Array.from(objectStoreNames).forEach((storeName) => {
     let count = 0;
     const aux = Array.from(importObject[storeName]);
     if (importObject[storeName] && aux.length > 0) {

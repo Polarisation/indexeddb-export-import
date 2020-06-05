@@ -16,7 +16,7 @@ function exportToJsonString(idbDatabase, cb) {
     );
     transaction.onerror = (event) => cb(event, null);
 
-    const objectStoreNames = Array.from(new Set(idbDatabase.objectStoreNames));
+    const objectStoreNames = Array.from(idbDatabase.objectStoreNames);
 
     objectStoreNames.forEach((storeName) => {
       const allObjects = [];

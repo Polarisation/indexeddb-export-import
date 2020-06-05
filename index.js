@@ -57,8 +57,9 @@ function importFromJsonString(idbDatabase, jsonString, cb) {
   const importObject = JSON.parse(jsonString);
   Array.from(idbDatabase.objectStoreNames).forEach((storeName) => {
     let count = 0;
-    if (importObject[storeName] && Array.from(importObject[storeName]).length > 0) {
-      Array.from(importObject[storeName]).forEach((toAdd) => {
+    const aux = Array.from(importObject[storeName]);
+    if (importObject[storeName] && aux.length > 0) {
+      aux.forEach((toAdd) => {
         const request = transaction.objectStore(storeName).add(toAdd);
         request.onsuccess = () => {
           count++;

@@ -29,7 +29,7 @@
   "homepage": "https://github.com/Polarisation/indexeddb-export-import#readme",
   "devDependencies": {
     "dexie": "^3.0.1",
-    "eslint": "^7.1.0",
+    "eslint": "^7.2.0",
     "eslint-config-google": "^0.14.0",
     "fake-indexeddb": "^3.0.1",
     "mocha": "^7.2.0"

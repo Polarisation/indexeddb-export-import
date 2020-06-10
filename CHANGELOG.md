@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.1.0
+
+ - Handle cases where there are empty stores or duplicated store names (#16)
+
 ## v2.0.3
 
  - Fix issue (#14) with npm package

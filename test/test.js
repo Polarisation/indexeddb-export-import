@@ -4,6 +4,9 @@ const Dexie = require('dexie');
 const IDBExportImport = require('../index');
 const assert = require('assert');
 
+const mock = JSON.stringify(require('./data/example.json'));
+const mock2 = JSON.stringify(require('./data/example2.json'));
+
 /* eslint-env mocha */
 
 describe('IDBExportImport', function() {
@@ -84,5 +87,69 @@ describe('IDBExportImport', function() {
     }).catch(Dexie.BulkError, function(e) {
       assert.ifError(e);
     });
+  });
+  it('Should import and export the database with empty keys', function(done) {
+    const db = new Dexie('myDB', {indexedDB: fakeIndexedDB});
+    db.version(1).stores({
+      colors: 'id++, name, info',
+      shapes: 'id++, name',
+      color_shape: '[shape+color]',
+      empty: 'id++',
+    });
+
+    db.open().catch(function(e) {
+      console.error('Could not connect. ' + e);
+    });
+
+    db.transaction('r',
+        db.colors,
+        db.shapes,
+        db.color_shape,
+        db.empty,
+        () => {
+          const idbDB = db.backendDB(); // get native IDBDatabase object from Dexie wrapper
+          IDBExportImport.clearDatabase(idbDB, function(err) {
+            assert.ifError(err);
+            console.log('Cleared the database');
+            IDBExportImport.importFromJsonString(idbDB, mock, function(err) {
+              assert.ifError(err);
+              if (!err) {
+                console.log('Imported data successfully');
+              }
+              done();
+            });
+          });
+        });
+  });
+  it('Should import and export the database with equal keys', function(done) {
+    const db = new Dexie('myDB2', {indexedDB: fakeIndexedDB});
+    db.version(1).stores({
+      foo: 'bar',
+      test: 'foo',
+    });
+    db.open().catch(function(e) {
+      console.error('Could not connect. ' + e);
+    });
+
+    db.transaction('r',
+        db.foo,
+        db.test,
+        () => {
+          const idbDB = db.backendDB(); // get native IDBDatabase object from Dexie wrapper
+          IDBExportImport.clearDatabase(idbDB, function(err) {
+            assert.ifError(err);
+            console.log('Cleared the database');
+            IDBExportImport.importFromJsonString(idbDB, mock2, function(err) {
+              assert.ifError(err);
+              console.log('Imported data successfully');
+              IDBExportImport.exportToJsonString(idbDB, function(err, jsonString) {
+                assert.ifError(err);
+                console.log('Exported as JSON: ' + jsonString);
+                assert.equal(jsonString, '{"foo":[{"bar":1}],"test":[{"foo":"value"}]}');
+                done();
+              });
+            });
+          });
+        });
   });
 });

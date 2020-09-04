@@ -49,6 +49,10 @@ function exportToJsonString(idbDatabase, cb) {
  * @param {function(Object)} cb - callback with signature (error), where error is null on success
  */
 function importFromJsonString(idbDatabase, jsonString, cb) {
+  const size = new Set(idbDatabase.objectStoreNames).size;
+  if (size === 0) {
+    return cb(null);
+  }
   const transaction = idbDatabase.transaction(
       idbDatabase.objectStoreNames,
       'readwrite'
@@ -95,11 +99,14 @@ function importFromJsonString(idbDatabase, jsonString, cb) {
  * @param {function(Object)} cb - callback with signature (error), where error is null on success
  */
 function clearDatabase(idbDatabase, cb) {
+  const size = new Set(idbDatabase.objectStoreNames).size;
+  if (size === 0) {
+    return cb(null);
+  }
   const transaction = idbDatabase.transaction(
       idbDatabase.objectStoreNames,
       'readwrite'
   );
-  const size = new Set(idbDatabase.objectStoreNames).size;
   transaction.onerror = (event) => cb(event);
 
   let count = 0;

@@ -152,4 +152,21 @@ describe('IDBExportImport', function() {
           });
         });
   });
+  it('Should not error if no object stores exist', function(done) {
+    const idbDB = fakeIndexedDB; // get native IDBDatabase object from Dexie wrapper
+    IDBExportImport.clearDatabase(idbDB, function(err) {
+      assert.ifError(err);
+      console.log('Cleared the database (nothing happened, no object stores exist)');
+      IDBExportImport.importFromJsonString(idbDB, mock2, function(err) {
+        assert.ifError(err);
+        console.log('Imported data successfully (nothing imported as no object stores exist');
+        IDBExportImport.exportToJsonString(idbDB, function(err, jsonString) {
+          assert.ifError(err);
+          console.log('Exported as JSON: ' + jsonString);
+          assert.equal(jsonString, '{}');
+          done();
+        });
+      });
+    });
+  });
 });

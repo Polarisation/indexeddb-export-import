@@ -42,14 +42,18 @@ function exportToJsonString(idbDatabase, cb) {
 
 /**
  * Import data from JSON into an IndexedDB database. This does not delete any existing data
- *  from the database, so keys could clash
+ *  from the database, so keys could clash.
+ *
+ * Only object stores that already exist will be imported.
  *
  * @param {IDBDatabase} idbDatabase - to import into
  * @param {string} jsonString - data to import, one key per object store
  * @param {function(Object)} cb - callback with signature (error), where error is null on success
+ * @return {void}
  */
 function importFromJsonString(idbDatabase, jsonString, cb) {
-  const size = new Set(idbDatabase.objectStoreNames).size;
+  const objectStoreNames = new Set(idbDatabase.objectStoreNames);
+  const size = objectStoreNames.size;
   if (size === 0) {
     return cb(null);
   }
@@ -60,7 +64,6 @@ function importFromJsonString(idbDatabase, jsonString, cb) {
   transaction.onerror = (event) => cb(event);
 
   const importObject = JSON.parse(jsonString);
-  const objectStoreNames = new Set(idbDatabase.objectStoreNames);
   Array.from(objectStoreNames).forEach((storeName) => {
     let count = 0;
     const aux = Array.from(importObject[storeName]);
@@ -93,10 +96,13 @@ function importFromJsonString(idbDatabase, jsonString, cb) {
 }
 
 /**
- * Clears a database of all data
+ * Clears a database of all data.
+ *
+ * The object stores will still exist but will be empty.
  *
  * @param {IDBDatabase} idbDatabase - to delete all data from
  * @param {function(Object)} cb - callback with signature (error), where error is null on success
+ * @return {void}
  */
 function clearDatabase(idbDatabase, cb) {
   const size = new Set(idbDatabase.objectStoreNames).size;

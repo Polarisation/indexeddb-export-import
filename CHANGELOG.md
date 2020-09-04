@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.1.1
+
+ - Handle case where no object stores exist
+
 ## v2.1.0
 
  - Handle cases where there are empty stores or duplicated store names (#16)

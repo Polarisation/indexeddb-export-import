@@ -12,13 +12,12 @@ function exportToJsonString(idbDatabase, cb) {
   if (size === 0) {
     return cb(null, JSON.stringify(exportObject));
   } else {
+    objectStoreNames = Array.from(objectStoreNames);
     const transaction = idbDatabase.transaction(
         objectStoreNames,
         'readonly'
     );
     transaction.onerror = (event) => cb(event, null);
-
-    objectStoreNames = Array.from(objectStoreNames);
 
     objectStoreNames.forEach((storeName) => {
       const allObjects = [];
@@ -53,47 +52,49 @@ function exportToJsonString(idbDatabase, cb) {
  * @return {void}
  */
 function importFromJsonString(idbDatabase, jsonString, cb) {
-  const objectStoreNames = new Set(idbDatabase.objectStoreNames);
+  let objectStoreNames = new Set(idbDatabase.objectStoreNames);
   const size = objectStoreNames.size;
   if (size === 0) {
-    return cb(null);
-  }
-  const transaction = idbDatabase.transaction(
-      objectStoreNames,
-      'readwrite'
-  );
-  transaction.onerror = (event) => cb(event);
+    cb(null);
+  } else {
+    objectStoreNames = Array.from(objectStoreNames);
+    const transaction = idbDatabase.transaction(
+        objectStoreNames,
+        'readwrite'
+    );
+    transaction.onerror = (event) => cb(event);
 
-  const importObject = JSON.parse(jsonString);
-  Array.from(objectStoreNames).forEach((storeName) => {
-    let count = 0;
-    const aux = Array.from(importObject[storeName]);
-    if (importObject[storeName] && aux.length > 0) {
-      aux.forEach((toAdd) => {
-        const request = transaction.objectStore(storeName).add(toAdd);
-        request.onsuccess = () => {
-          count++;
-          if (count === importObject[storeName].length) {
-            // added all objects for this store
-            delete importObject[storeName];
-            if (Object.keys(importObject).length === 0) {
-              // added all object stores
-              cb(null);
+    const importObject = JSON.parse(jsonString);
+    objectStoreNames.forEach((storeName) => {
+      let count = 0;
+      const aux = Array.from(importObject[storeName]);
+      if (importObject[storeName] && aux.length > 0) {
+        aux.forEach((toAdd) => {
+          const request = transaction.objectStore(storeName).add(toAdd);
+          request.onsuccess = () => {
+            count++;
+            if (count === importObject[storeName].length) {
+              // added all objects for this store
+              delete importObject[storeName];
+              if (Object.keys(importObject).length === 0) {
+                // added all object stores
+                cb(null);
+              }
             }
-          }
-        };
-        request.onerror = (event) => {
-          console.log(event);
-        };
-      });
-    } else {
-      delete importObject[storeName];
-      if (Object.keys(importObject).length === 0) {
-        // added all object stores
-        cb(null);
+          };
+          request.onerror = (event) => {
+            console.log(event);
+          };
+        });
+      } else {
+        delete importObject[storeName];
+        if (Object.keys(importObject).length === 0) {
+          // added all object stores
+          cb(null);
+        }
       }
-    }
-  });
+    });
+  }
 }
 
 /**
@@ -106,27 +107,29 @@ function importFromJsonString(idbDatabase, jsonString, cb) {
  * @return {void}
  */
 function clearDatabase(idbDatabase, cb) {
-  const objectStoreNames = new Set(idbDatabase.objectStoreNames);
+  let objectStoreNames = new Set(idbDatabase.objectStoreNames);
   const size = objectStoreNames.size;
   if (size === 0) {
-    return cb(null);
-  }
-  const transaction = idbDatabase.transaction(
-      objectStoreNames,
-      'readwrite'
-  );
-  transaction.onerror = (event) => cb(event);
+    cb(null);
+  } else {
+    objectStoreNames = Array.from(objectStoreNames);
+    const transaction = idbDatabase.transaction(
+        objectStoreNames,
+        'readwrite'
+    );
+    transaction.onerror = (event) => cb(event);
 
-  let count = 0;
-  Array.from(objectStoreNames).forEach(function(storeName) {
-    transaction.objectStore(storeName).clear().onsuccess = () => {
-      count++;
-      if (count === size) {
-        // cleared all object stores
-        cb(null);
-      }
-    };
-  });
+    let count = 0;
+    objectStoreNames.forEach(function (storeName) {
+      transaction.objectStore(storeName).clear().onsuccess = () => {
+        count++;
+        if (count === size) {
+          // cleared all object stores
+          cb(null);
+        }
+      };
+    });
+  }
 }
 
 if (typeof module !== 'undefined' && module.exports) {

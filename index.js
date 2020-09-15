@@ -10,7 +10,7 @@ function exportToJsonString(idbDatabase, cb) {
   let objectStoreNames = new Set(idbDatabase.objectStoreNames);
   const size = objectStoreNames.size;
   if (size === 0) {
-    return cb(null, JSON.stringify(exportObject));
+    cb(null, JSON.stringify(exportObject));
   } else {
     objectStoreNames = Array.from(objectStoreNames);
     const transaction = idbDatabase.transaction(
@@ -32,7 +32,7 @@ function exportToJsonString(idbDatabase, cb) {
             objectStoreNames.length ===
             Object.keys(exportObject).length
           ) {
-            return cb(null, JSON.stringify(exportObject));
+            cb(null, JSON.stringify(exportObject));
           }
         }
       };

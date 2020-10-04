@@ -7,12 +7,12 @@
  */
 function exportToJsonString(idbDatabase, cb) {
   const exportObject = {};
-  let objectStoreNames = new Set(idbDatabase.objectStoreNames);
-  const size = objectStoreNames.size;
+  const objectStoreNamesSet = new Set(idbDatabase.objectStoreNames);
+  const size = objectStoreNamesSet.size;
   if (size === 0) {
     cb(null, JSON.stringify(exportObject));
   } else {
-    objectStoreNames = Array.from(objectStoreNames);
+    const objectStoreNames = Array.from(objectStoreNamesSet);
     const transaction = idbDatabase.transaction(
         objectStoreNames,
         'readonly'
@@ -52,12 +52,12 @@ function exportToJsonString(idbDatabase, cb) {
  * @return {void}
  */
 function importFromJsonString(idbDatabase, jsonString, cb) {
-  let objectStoreNames = new Set(idbDatabase.objectStoreNames);
-  const size = objectStoreNames.size;
+  const objectStoreNamesSet = new Set(idbDatabase.objectStoreNames);
+  const size = objectStoreNamesSet.size;
   if (size === 0) {
     cb(null);
   } else {
-    objectStoreNames = Array.from(objectStoreNames);
+    const objectStoreNames = Array.from(objectStoreNamesSet);
     const transaction = idbDatabase.transaction(
         objectStoreNames,
         'readwrite'
@@ -107,12 +107,12 @@ function importFromJsonString(idbDatabase, jsonString, cb) {
  * @return {void}
  */
 function clearDatabase(idbDatabase, cb) {
-  let objectStoreNames = new Set(idbDatabase.objectStoreNames);
-  const size = objectStoreNames.size;
+  const objectStoreNamesSet = new Set(idbDatabase.objectStoreNames);
+  const size = objectStoreNamesSet.size;
   if (size === 0) {
     cb(null);
   } else {
-    objectStoreNames = Array.from(objectStoreNames);
+    const objectStoreNames = Array.from(objectStoreNamesSet);
     const transaction = idbDatabase.transaction(
         objectStoreNames,
         'readwrite'

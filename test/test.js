@@ -131,7 +131,7 @@ describe('IDBExportImport', function() {
         assert.ifError(err);
         console.log('Exported as JSON: ' + jsonString);
         assert.equal(jsonString, '{"things":[' +
-        '{"thing_name":"First thing","thing_description":"This is the first thing","id":1},' +
+          '{"thing_name":"First thing","thing_description":"This is the first thing","id":1},' +
           '{"thing_name":"Second thing","thing_description":"This is the second thing","id":2}]}');
 
         IDBExportImport.clearDatabase(idbDB, function(err) {
@@ -146,7 +146,7 @@ describe('IDBExportImport', function() {
               assert.ifError(err);
               console.log('Exported as JSON: ' + jsonString);
               assert.equal(jsonString, '{"things":[' +
-               '{"thing_name":"First thing","thing_description":"This is the first thing","id":1}' +
+                '{"thing_name":"First thing","thing_description":"This is the first thing","id":1}' +
                 ',{"thing_name":"Second thing","thing_description":"This is the second thing","id":2}]}');
 
               done();

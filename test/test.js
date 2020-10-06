@@ -187,4 +187,32 @@ describe('IDBExportImport', function() {
       });
     });
   });
+
+  it('Should delete single object store from  database', function(done) {
+    const db = new Dexie('MyDB', {indexedDB: fakeIndexedDB});
+    db.version(1).stores({
+      things: 'id++, thing_name, thing_description',
+    });
+    db.open().catch(function(e) {
+      console.error('Could not connect. ' + e);
+    });
+
+    const thingsToAdd = [{thing_name: 'First thing', thing_description: 'This is the first thing'},
+      {thing_name: 'Second thing', thing_description: 'This is the second thing'}];
+    db.things.bulkAdd(thingsToAdd).then(function() {
+      const idbDB = db.backendDB(); // get native IDBDatabase object from Dexie wrapper
+      IDBExportImport.clearObjectstore(idbDB, 'things', function(err) {
+        assert.ifError(err);
+        console.log('Cleared the database');
+        IDBExportImport.exportToJsonString(idbDB, function(err, jsonString) {
+          assert.ifError(err);
+          console.log('Exported as JSON: ' + jsonString);
+          assert.equal(jsonString, '{"things":[]}');
+          done();
+        });
+      });
+    }).catch(Dexie.BulkError, function(e) {
+      assert.ifError(e);
+    });
+  });
 });

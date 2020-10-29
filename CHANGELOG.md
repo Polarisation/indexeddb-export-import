@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.1.2
+
+- Fix possible issue if `objectStoreNames` is `undefined`.
+
 ## v2.1.1
 
  - Handle case where no object stores exist

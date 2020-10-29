@@ -120,7 +120,7 @@ function clearDatabase(idbDatabase, cb) {
     transaction.onerror = (event) => cb(event);
 
     let count = 0;
-    objectStoreNames.forEach(function (storeName) {
+    objectStoreNames.forEach(function(storeName) {
       transaction.objectStore(storeName).clear().onsuccess = () => {
         count++;
         if (count === size) {

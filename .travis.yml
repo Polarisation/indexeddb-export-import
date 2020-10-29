@@ -1,3 +1,13 @@
+---
 language: node_js
 node_js:
-  - "node"
+  - "10"
+
+dist: xenial
+
+install:
+  - npm install
+
+script:
+  - npm run lint
+  - npm run test

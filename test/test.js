@@ -201,7 +201,7 @@ describe('IDBExportImport', function() {
       {thing_name: 'Second thing', thing_description: 'This is the second thing'}];
     db.things.bulkAdd(thingsToAdd).then(function() {
       const idbDB = db.backendDB(); // get native IDBDatabase object from Dexie wrapper
-      IDBExportImport.clearObjectstore(idbDB, 'things', function(err) {
+      IDBExportImport.clearDatabase(idbDB, function(err) {
         assert.ifError(err);
         console.log('Cleared the database');
         IDBExportImport.exportToJsonString(idbDB, function(err, jsonString) {
@@ -210,7 +210,7 @@ describe('IDBExportImport', function() {
           assert.equal(jsonString, '{"things":[]}');
           done();
         });
-      });
+      }, 'things');
     }).catch(Dexie.BulkError, function(e) {
       assert.ifError(e);
     });

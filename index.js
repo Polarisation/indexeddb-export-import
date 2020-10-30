@@ -14,7 +14,7 @@ function exportToJsonString(idbDatabase, cb) {
   } else {
     const objectStoreNames = Array.from(objectStoreNamesSet);
     const transaction = idbDatabase.transaction(
-        objectStoreNames,
+        idbDatabase.objectStoreNames,
         'readonly'
     );
     transaction.onerror = (event) => cb(event, null);
@@ -104,9 +104,10 @@ function importFromJsonString(idbDatabase, jsonString, cb) {
  *
  * @param {IDBDatabase} idbDatabase - to delete all data from
  * @param {function(Object)} cb - callback with signature (error), where error is null on success
+ * @param {string} storeName - to delete all data from
  * @return {void}
  */
-function clearDatabase(idbDatabase, cb) {
+function clearDatabase(idbDatabase, cb, storeName = 'nothing') {
   const objectStoreNamesSet = new Set(idbDatabase.objectStoreNames);
   const size = objectStoreNamesSet.size;
   if (size === 0) {
@@ -114,61 +115,40 @@ function clearDatabase(idbDatabase, cb) {
   } else {
     const objectStoreNames = Array.from(objectStoreNamesSet);
     const transaction = idbDatabase.transaction(
-        objectStoreNames,
+        idbDatabase.objectStoreNames,
         'readwrite'
     );
     transaction.onerror = (event) => cb(event);
 
-    let count = 0;
-    objectStoreNames.forEach(function(storeName) {
+    if (storeName === 'nothing') {
+      let count = 0;
+      objectStoreNames.forEach(function(storeName) {
+        transaction.objectStore(storeName).clear().onsuccess = () => {
+          count++;
+          if (count === size) {
+            // cleared all object stores
+            cb(null);
+          }
+        };
+      });
+    } else {
+      let count = 0;
       transaction.objectStore(storeName).clear().onsuccess = () => {
         count++;
         if (count === size) {
-          // cleared all object stores
+          // cleared object store
           cb(null);
         }
       };
-    });
-  }
-}
-
-/**
- * Clears a chosen objectstore in a DB.
- *
- * The object store will still exist but will be empty.
- *
- * @param {IDBDatabase} idbDatabase - to delete all data from
- * @param {string} storeName - to delete all data from
- * @param {function(Object)} cb - callback with signature (error), where error is null on success
- * @return {void}
- */
-function clearObjectstore(idbDatabase, storeName, cb) {
-  const size = new Set(idbDatabase.objectStoreNames).size;
-  if (size === 0) {
-    return cb(null);
-  }
-  const transaction = idbDatabase.transaction(
-      storeName,
-      'readwrite'
-  );
-  transaction.onerror = (event) => cb(event);
-
-  let count = 0;
-  transaction.objectStore(storeName).clear().onsuccess = () => {
-    count++;
-    if (count === size) {
-      // cleared object store
-      cb(null);
     }
-  };
+  }
 }
+
 if (typeof module !== 'undefined' && module.exports) {
   // We are running on Node.js so need to export the module
   module.exports = {
     exportToJsonString: exportToJsonString,
     importFromJsonString: importFromJsonString,
     clearDatabase: clearDatabase,
-    clearObjectstore: clearObjectstore,
   };
 }
-

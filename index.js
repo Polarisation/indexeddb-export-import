@@ -59,11 +59,9 @@ function importFromJsonString(idbDatabase, jsonString, cb) {
   } else {
     const objectStoreNames = Array.from(objectStoreNamesSet);
     const transaction = idbDatabase.transaction(
-        objectStoreNames,
+        idbDatabase.objectStoreNames,
         'readwrite'
     );
-    transaction.onerror = (event) => cb(event);
-
     const importObject = JSON.parse(jsonString);
     objectStoreNames.forEach((storeName) => {
       let count = 0;

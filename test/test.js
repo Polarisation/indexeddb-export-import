@@ -40,8 +40,78 @@ describe('IDBExportImport', function() {
         console.error('Could not connect. ' + e);
       });
     });
-  });
 
+    it('should export data for specified store', function(done) {
+      const db = new Dexie('myDB2', {indexedDB: fakeIndexedDB});
+      db.version(1).stores({
+        foo: 'bar',
+        test: 'foo',
+      });
+      db.open().catch(function(e) {
+        console.error('Could not connect. ' + e);
+      });
+      db.transaction('r',
+          db.foo,
+          db.test,
+          () => {
+            const idbDB = db.backendDB(); // get native IDBDatabase object from Dexie wrapper
+            IDBExportImport.clearDatabase(idbDB, function(err) {
+              assert.ifError(err);
+              console.log('Cleared the database');
+              IDBExportImport.importFromJsonString(idbDB, mock2, function(err) {
+                assert.ifError(err);
+                console.log('Imported data successfully');
+                IDBExportImport.exportToJsonString(idbDB, function(err, jsonString) {
+                  assert.ifError(err);
+                  console.log('Exported as JSON: ' + jsonString);
+                  assert.equal(jsonString, '{"foo":[{"bar":1}]}');
+                  done();
+                }, 'foo');
+              });
+            });
+          });
+    });
+  });
+  describe('#importFromJsonString()', function() {
+    it('should import only the specified store', function(done) {
+      const db = new Dexie('myDB', {indexedDB: fakeIndexedDB});
+      db.version(1).stores({
+        colors: 'id++, name, info',
+        shapes: 'id++, name',
+        color_shape: '[shape+color]',
+        empty: 'id++',
+      });
+
+      db.open().catch(function(e) {
+        console.error('Could not connect. ' + e);
+      });
+
+      db.transaction('r',
+          db.colors,
+          db.shapes,
+          db.color_shape,
+          db.empty,
+          () => {
+            const idbDB = db.backendDB(); // get native IDBDatabase object from Dexie wrapper
+            IDBExportImport.clearDatabase(idbDB, function(err) {
+              assert.ifError(err);
+              console.log('Cleared the database');
+              IDBExportImport.importFromJsonString(idbDB, mock, function(err) {
+                assert.ifError(err);
+                if (!err) {
+                  console.log('Imported data successfully');
+                }
+                IDBExportImport.exportToJsonString(idbDB, function(err, jsonString) {
+                  assert.ifError(err);
+                  console.log('Exported as JSON: ' + jsonString);
+                  assert.equal(jsonString, '{"colors":[{"id":1,"name":"red"},{"id":2,"name":"green"},{"id":3,"name":"blue"}]}');
+                  done();
+                }, 'colors');
+              }, 'colors');
+            });
+          });
+    });
+  });
   it('Should export, clear, and import the database', function(done) {
     const db = new Dexie('MyDB', {indexedDB: fakeIndexedDB});
     db.version(1).stores({
@@ -211,6 +281,34 @@ describe('IDBExportImport', function() {
           done();
         });
       }, 'things');
+    }).catch(Dexie.BulkError, function(e) {
+      assert.ifError(e);
+    });
+  });
+
+  it('Should delete all stores in db if none are specified', function(done) {
+    const db = new Dexie('MyDB', {indexedDB: fakeIndexedDB});
+    db.version(1).stores({
+      things: 'id++, thing_name, thing_description',
+    });
+    db.open().catch(function(e) {
+      console.error('Could not connect. ' + e);
+    });
+
+    const thingsToAdd = [{thing_name: 'First thing', thing_description: 'This is the first thing'},
+      {thing_name: 'Second thing', thing_description: 'This is the second thing'}];
+    db.things.bulkAdd(thingsToAdd).then(function() {
+      const idbDB = db.backendDB(); // get native IDBDatabase object from Dexie wrapper
+      IDBExportImport.clearDatabase(idbDB, function(err) {
+        assert.ifError(err);
+        console.log('Cleared the database');
+        IDBExportImport.exportToJsonString(idbDB, function(err, jsonString) {
+          assert.ifError(err);
+          console.log('Exported as JSON: ' + jsonString);
+          assert.equal(jsonString, '{"things":[]}');
+          done();
+        });
+      });
     }).catch(Dexie.BulkError, function(e) {
       assert.ifError(e);
     });

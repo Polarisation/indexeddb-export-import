@@ -4,8 +4,9 @@
  * Export all data from an IndexedDB database
  * @param {IDBDatabase} idbDatabase - to export from
  * @param {function(Object?, string?)} cb - callback with signature (error, jsonString)
+ * @param {string} storeName - to export data from
  */
-function exportToJsonString(idbDatabase, cb) {
+function exportToJsonString(idbDatabase, cb, storeName = null) {
   const exportObject = {};
   const objectStoreNamesSet = new Set(idbDatabase.objectStoreNames);
   const size = objectStoreNamesSet.size;
@@ -14,12 +15,31 @@ function exportToJsonString(idbDatabase, cb) {
   } else {
     const objectStoreNames = Array.from(objectStoreNamesSet);
     const transaction = idbDatabase.transaction(
-        objectStoreNames,
+        idbDatabase.objectStoreNames,
         'readonly'
     );
     transaction.onerror = (event) => cb(event, null);
 
-    objectStoreNames.forEach((storeName) => {
+    if (storeName == null) {
+      objectStoreNames.forEach((storeName) => {
+        const allObjects = [];
+        transaction.objectStore(storeName).openCursor().onsuccess = (event) => {
+          const cursor = event.target.result;
+          if (cursor) {
+            allObjects.push(cursor.value);
+            cursor.continue();
+          } else {
+            exportObject[storeName] = allObjects;
+            if (
+              objectStoreNames.length ===
+              Object.keys(exportObject).length
+            ) {
+              cb(null, JSON.stringify(exportObject));
+            }
+          }
+        };
+      });
+    } else {
       const allObjects = [];
       transaction.objectStore(storeName).openCursor().onsuccess = (event) => {
         const cursor = event.target.result;
@@ -28,15 +48,10 @@ function exportToJsonString(idbDatabase, cb) {
           cursor.continue();
         } else {
           exportObject[storeName] = allObjects;
-          if (
-            objectStoreNames.length ===
-            Object.keys(exportObject).length
-          ) {
-            cb(null, JSON.stringify(exportObject));
-          }
+          cb(null, JSON.stringify(exportObject));
         }
       };
-    });
+    }
   }
 }
 
@@ -49,9 +64,10 @@ function exportToJsonString(idbDatabase, cb) {
  * @param {IDBDatabase} idbDatabase - to import into
  * @param {string} jsonString - data to import, one key per object store
  * @param {function(Object)} cb - callback with signature (error), where error is null on success
+ * @param {string} storeName - to import data into
  * @return {void}
  */
-function importFromJsonString(idbDatabase, jsonString, cb) {
+function importFromJsonString(idbDatabase, jsonString, cb, storeName = null) {
   const objectStoreNamesSet = new Set(idbDatabase.objectStoreNames);
   const size = objectStoreNamesSet.size;
   if (size === 0) {
@@ -59,13 +75,41 @@ function importFromJsonString(idbDatabase, jsonString, cb) {
   } else {
     const objectStoreNames = Array.from(objectStoreNamesSet);
     const transaction = idbDatabase.transaction(
-        objectStoreNames,
+        idbDatabase.objectStoreNames,
         'readwrite'
     );
-    transaction.onerror = (event) => cb(event);
-
     const importObject = JSON.parse(jsonString);
-    objectStoreNames.forEach((storeName) => {
+    if (storeName == null) {
+      objectStoreNames.forEach((storeName) => {
+        let count = 0;
+        const aux = Array.from(importObject[storeName]);
+        if (importObject[storeName] && aux.length > 0) {
+          aux.forEach((toAdd) => {
+            const request = transaction.objectStore(storeName).add(toAdd);
+            request.onsuccess = () => {
+              count++;
+              if (count === importObject[storeName].length) {
+                // added all objects for this store
+                delete importObject[storeName];
+                if (Object.keys(importObject).length === 0) {
+                  // added all object stores
+                  cb(null);
+                }
+              }
+            };
+            request.onerror = (event) => {
+              console.log(event);
+            };
+          });
+        } else {
+          delete importObject[storeName];
+          if (Object.keys(importObject).length === 0) {
+            // added all object stores
+            cb(null);
+          }
+        }
+      });
+    } else {
       let count = 0;
       const aux = Array.from(importObject[storeName]);
       if (importObject[storeName] && aux.length > 0) {
@@ -76,10 +120,8 @@ function importFromJsonString(idbDatabase, jsonString, cb) {
             if (count === importObject[storeName].length) {
               // added all objects for this store
               delete importObject[storeName];
-              if (Object.keys(importObject).length === 0) {
-                // added all object stores
-                cb(null);
-              }
+              // added all object stores
+              cb(null);
             }
           };
           request.onerror = (event) => {
@@ -93,7 +135,7 @@ function importFromJsonString(idbDatabase, jsonString, cb) {
           cb(null);
         }
       }
-    });
+    }
   }
 }
 
@@ -104,9 +146,10 @@ function importFromJsonString(idbDatabase, jsonString, cb) {
  *
  * @param {IDBDatabase} idbDatabase - to delete all data from
  * @param {function(Object)} cb - callback with signature (error), where error is null on success
+ * @param {string} storeName - to delete all data from
  * @return {void}
  */
-function clearDatabase(idbDatabase, cb) {
+function clearDatabase(idbDatabase, cb, storeName = null) {
   const objectStoreNamesSet = new Set(idbDatabase.objectStoreNames);
   const size = objectStoreNamesSet.size;
   if (size === 0) {
@@ -118,17 +161,27 @@ function clearDatabase(idbDatabase, cb) {
         'readwrite'
     );
     transaction.onerror = (event) => cb(event);
-
-    let count = 0;
-    objectStoreNames.forEach(function(storeName) {
+    if (storeName == null) {
+      let count = 0;
+      objectStoreNames.forEach(function(storeName) {
+        transaction.objectStore(storeName).clear().onsuccess = () => {
+          count++;
+          if (count === size) {
+            // cleared all object stores
+            cb(null);
+          }
+        };
+      });
+    } else {
+      let count = 0;
       transaction.objectStore(storeName).clear().onsuccess = () => {
         count++;
         if (count === size) {
-          // cleared all object stores
+          // cleared object store
           cb(null);
         }
       };
-    });
+    }
   }
 }
 

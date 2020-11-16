@@ -53,6 +53,7 @@ Export all data from an IndexedDB database
 | --- | --- | --- |
 | idbDatabase | <code>IDBDatabase</code> |  |
 | cb | <code>function</code> | callback with signature (error, jsonString) |
+| storeName(optional) | <code>string</code> | store name to export data for |
 
 <a name="importFromJsonString"></a>
 
@@ -64,6 +65,7 @@ Import data from JSON into an IndexedDB database. This does not delete any exist
 | idbDatabase | <code>IDBDatabase</code> |  |
 | jsonString | <code>string</code> | data to import, one key per object store |
 | cb | <code>function</code> | callback with signature (error), where error is null on success |
+| storeName(optional) | <code>string</code> | store name to import data for |
 
 <a name="clearDatabase"></a>
 
@@ -74,6 +76,7 @@ Clears a database of all data
 | --- | --- | --- |
 | idbDatabase | <code>IDBDatabase</code> |  |
 | cb | <code>function</code> | callback with signature (error), where error is null on success |
+| storeName(optional) | <code>string</code> | store name to clear up data for |
 
 
 ## Installation

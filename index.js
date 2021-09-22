@@ -80,7 +80,11 @@ function importFromJsonString(idbDatabase, jsonString, cb) {
 
     objectStoreNames.forEach((storeName) => {
       let count = 0;
-      const aux = Array.from(importObject[storeName]);
+      
+      // setting aux to an empty array if the key doesn't exists in the import object.
+      const data_to_import = importObject[storeName] || []
+      const aux = Array.from(data_to_import) ;
+
       if (importObject[storeName] && aux.length > 0) {
         aux.forEach((toAdd) => {
           const request = transaction.objectStore(storeName).add(toAdd);

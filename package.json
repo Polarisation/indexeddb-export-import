@@ -33,5 +33,8 @@
     "eslint-config-google": "^0.14.0",
     "fake-indexeddb": "^3.1.3",
     "mocha": "^9.1.1"
+  },
+  "engines": {
+    "node": ">=12"
   }
 }

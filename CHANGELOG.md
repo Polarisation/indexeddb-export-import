@@ -1,5 +1,10 @@
 # Changelog
 
+## v2.1.3
+
+- Fix bug when import JSON contains keys that are not present as object store names (#21).
+- Updated tests to run on Node.js v12 (current maintenance LTS).
+
 ## v2.1.2
 
 - Fix possible issue if `objectStoreNames` is `undefined`.

@@ -88,6 +88,39 @@ describe('IDBExportImport', function() {
       assert.ifError(e);
     });
   });
+  it('Should ignore keys for stores that do not exist when importing', function(done) {
+    const db = new Dexie('MyDB', {indexedDB: fakeIndexedDB});
+    db.version(1).stores({
+      things: 'id++, thing_name, thing_description',
+    });
+    db.open().catch(function(e) {
+      console.error('Could not connect. ' + e);
+    });
+
+    const thingsToAdd = [{thing_name: 'First thing', thing_description: 'This is the first thing'},
+      {thing_name: 'Second thing', thing_description: 'This is the second thing'}];
+    db.things.bulkAdd(thingsToAdd).then(function() {
+      const idbDB = db.backendDB(); // get native IDBDatabase object from Dexie wrapper
+      IDBExportImport.importFromJsonString(idbDB, '{"other":[' +
+        '{"thing_name":"First thing","thing_description":"This is the first thing","id":1},' +
+        '{"thing_name":"Second thing","thing_description":"This is the second thing","id":2}]}', function(err) {
+        assert.ifError(err);
+        console.log('Imported data successfully');
+
+        IDBExportImport.clearDatabase(idbDB, () => {
+          IDBExportImport.importFromJsonString(idbDB, '{"other": [], "things":[' +
+            '{"thing_name":"First thing","thing_description":"This is the first thing","id":1},' +
+            '{"thing_name":"Second thing","thing_description":"This is the second thing","id":2}]}', function(err) {
+            assert.ifError(err);
+            console.log('Imported data successfully');
+            done();
+          });
+        });
+      });
+    }).catch(Dexie.BulkError, function(e) {
+      assert.ifError(e);
+    });
+  });
   it('Should import and export the database with empty keys', function(done) {
     const db = new Dexie('myDB', {indexedDB: fakeIndexedDB});
     db.version(1).stores({

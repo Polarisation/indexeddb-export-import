@@ -66,14 +66,17 @@ function importFromJsonString(idbDatabase, jsonString, cb) {
 
     const importObject = JSON.parse(jsonString);
 
-
-    //deleting keys present in json that are not present in database, causing callback to never be called.
-    Object.keys(importObject).forEach(item=> {
-      if(!objectStoreNames.includes(item)){
-        console.log('deleted '+item)
-        delete importObject[item]
+    // Delete keys present in JSON that are not present in database
+    Object.keys(importObject).forEach((storeName)=> {
+      if (!objectStoreNames.includes(storeName)) {
+        delete importObject[storeName];
       }
-    })
+    });
+
+    if (Object.keys(importObject).length === 0) {
+      // no object stores exist to import for
+      cb(null);
+    }
 
     objectStoreNames.forEach((storeName) => {
       let count = 0;

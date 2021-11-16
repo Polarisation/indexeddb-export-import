@@ -1,8 +1,12 @@
 # Changelog
 
-## v2.1.4
+## v2.1.5
 
 - Fix bug when import JSON is missing keys that are present as object store names (#25).
+
+## v2.1.4
+
+*Bad release - do not use.*
 
 ## v2.1.3
 

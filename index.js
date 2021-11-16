@@ -81,9 +81,7 @@ function importFromJsonString(idbDatabase, jsonString, cb) {
     objectStoreNames.forEach((storeName) => {
       let count = 0;
 
-      // setting aux to an empty array if the key doesn't exists in the import object.
-      const dataToImport = importObject[storeName] || [];
-      const aux = Array.from(dataToImport);
+      const aux = Array.from(importObject[storeName] || []);
 
       if (importObject[storeName] && aux.length > 0) {
         aux.forEach((toAdd) => {
@@ -104,10 +102,12 @@ function importFromJsonString(idbDatabase, jsonString, cb) {
           };
         });
       } else {
-        delete importObject[storeName];
-        if (Object.keys(importObject).length === 0) {
-          // added all object stores
-          cb(null);
+        if (importObject[storeName]) {
+          delete importObject[storeName];
+          if (Object.keys(importObject).length === 0) {
+            // added all object stores
+            cb(null);
+          }
         }
       }
     });

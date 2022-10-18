@@ -13,6 +13,7 @@ You will need an open [IDBDatabase](https://developer.mozilla.org/en-US/docs/Web
 
 The following example exports a database, clears all object stores, then re-imports the database. It uses [Dexie.js](https://github.com/dfahlander/Dexie.js) to initiate the database, but this is not required.
 
+```js
     const Dexie = require('dexie');
     const IDBExportImport = require('indexeddb-export-import');
     
@@ -43,6 +44,7 @@ The following example exports a database, clears all object stores, then re-impo
     }).catch(function(e) {
       console.error('Could not connect. ' + e);
     });
+```
 
 ## API
 

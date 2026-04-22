@@ -1,5 +1,6 @@
 /* eslint-disable max-len */
-const fakeIndexedDB = require('fake-indexeddb');
+const {IDBFactory} = require('fake-indexeddb');
+const fakeIndexedDB = new IDBFactory();
 const Dexie = require('dexie');
 const IDBExportImport = require('../index');
 const assert = require('assert');
@@ -249,6 +250,57 @@ describe('IDBExportImport', function() {
           done();
         });
       });
+    });
+  });
+
+  describe('Promise API', function() {
+    it('exportToJsonString should return a Promise when no callback given', async function() {
+      const db = new Dexie('PromiseExportDB', {indexedDB: new IDBFactory()});
+      db.version(1).stores({items: 'id++'});
+      await db.open();
+      const idbDB = db.backendDB();
+      const jsonString = await IDBExportImport.exportToJsonString(idbDB);
+      assert.equal(jsonString, '{"items":[]}');
+      db.close();
+    });
+
+    it('clearDatabase should return a Promise when no callback given', async function() {
+      const db = new Dexie('PromiseClearDB', {indexedDB: new IDBFactory()});
+      db.version(1).stores({items: 'id++'});
+      await db.open();
+      await db.items.add({name: 'test'});
+      const idbDB = db.backendDB();
+      await IDBExportImport.clearDatabase(idbDB);
+      const jsonString = await IDBExportImport.exportToJsonString(idbDB);
+      assert.equal(jsonString, '{"items":[]}');
+      db.close();
+    });
+
+    it('importFromJsonString should return a Promise when no callback given', async function() {
+      const db = new Dexie('PromiseImportDB', {indexedDB: new IDBFactory()});
+      db.version(1).stores({items: 'id++'});
+      await db.open();
+      const idbDB = db.backendDB();
+      await IDBExportImport.importFromJsonString(idbDB, '{"items":[{"id":1,"name":"one"}]}');
+      const jsonString = await IDBExportImport.exportToJsonString(idbDB);
+      assert.equal(jsonString, '{"items":[{"id":1,"name":"one"}]}');
+      db.close();
+    });
+
+    it('Should export, clear, and import using async/await', async function() {
+      const db = new Dexie('AsyncRoundTripDB', {indexedDB: new IDBFactory()});
+      db.version(1).stores({things: 'id++, name'});
+      await db.open();
+      await db.things.bulkAdd([{name: 'alpha'}, {name: 'beta'}]);
+      const idbDB = db.backendDB();
+
+      const exported = await IDBExportImport.exportToJsonString(idbDB);
+      await IDBExportImport.clearDatabase(idbDB);
+      await IDBExportImport.importFromJsonString(idbDB, exported);
+      const reExported = await IDBExportImport.exportToJsonString(idbDB);
+
+      assert.equal(exported, reExported);
+      db.close();
     });
   });
 });

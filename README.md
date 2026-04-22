@@ -111,6 +111,8 @@ Clears a database of all data. The object stores themselves are preserved.
 $ npm install indexeddb-export-import
 ```
 
+> **Note for contributors:** running the test suite requires Node ≥ 18 (dev dependencies mocha 11 and fake-indexeddb 6 both require it). The library itself has no runtime dependencies and works on Node ≥ 12.
+
 ## License
 
 MIT

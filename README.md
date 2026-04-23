@@ -13,6 +13,8 @@ You will need an open [IDBDatabase](https://developer.mozilla.org/en-US/docs/Web
 
 All three functions support both a **Promise/async-await** style (omit the callback) and a traditional **callback** style.
 
+The following examples export a database, clear all object stores, then re-import the database. They use [Dexie.js](https://github.com/dfahlander/Dexie.js) to initiate the database, but this is not required.
+
 ### async/await (recommended)
 
 ```js

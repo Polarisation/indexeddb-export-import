@@ -1,6 +1,0 @@
-.github/
-.circleci/
-test/
-.eslintrc.js
-.travis.yml
-CHANGELOG.md

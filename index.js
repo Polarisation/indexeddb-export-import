@@ -3,9 +3,19 @@
 /**
  * Export all data from an IndexedDB database
  * @param {IDBDatabase} idbDatabase - to export from
- * @param {function(Object?, string?)} cb - callback with signature (error, jsonString)
+ * @param {function(Object?, string?)} [cb] - optional callback (error, jsonString);
+ *   if omitted, returns a Promise<string>
+ * @return {void|Promise<string>}
  */
 function exportToJsonString(idbDatabase, cb) {
+  if (typeof cb !== 'function') {
+    return new Promise(function(resolve, reject) {
+      exportToJsonString(idbDatabase, function(err, result) {
+        if (err) reject(err); else resolve(result);
+      });
+    });
+  }
+
   const exportObject = {};
   const objectStoreNamesSet = new Set(idbDatabase.objectStoreNames);
   const size = objectStoreNamesSet.size;
@@ -15,7 +25,7 @@ function exportToJsonString(idbDatabase, cb) {
     const objectStoreNames = Array.from(objectStoreNamesSet);
     const transaction = idbDatabase.transaction(
         objectStoreNames,
-        'readonly'
+        'readonly',
     );
     transaction.onerror = (event) => cb(event, null);
 
@@ -48,10 +58,18 @@ function exportToJsonString(idbDatabase, cb) {
  *
  * @param {IDBDatabase} idbDatabase - to import into
  * @param {string} jsonString - data to import, one key per object store
- * @param {function(Object)} cb - callback with signature (error), where error is null on success
- * @return {void}
+ * @param {function(Object)} [cb] - optional callback (error); if omitted, returns a Promise
+ * @return {void|Promise<void>}
  */
 function importFromJsonString(idbDatabase, jsonString, cb) {
+  if (typeof cb !== 'function') {
+    return new Promise(function(resolve, reject) {
+      importFromJsonString(idbDatabase, jsonString, function(err) {
+        if (err) reject(err); else resolve();
+      });
+    });
+  }
+
   const objectStoreNamesSet = new Set(idbDatabase.objectStoreNames);
   const size = objectStoreNamesSet.size;
   if (size === 0) {
@@ -60,7 +78,7 @@ function importFromJsonString(idbDatabase, jsonString, cb) {
     const objectStoreNames = Array.from(objectStoreNamesSet);
     const transaction = idbDatabase.transaction(
         objectStoreNames,
-        'readwrite'
+        'readwrite',
     );
     transaction.onerror = (event) => cb(event);
 
@@ -97,9 +115,7 @@ function importFromJsonString(idbDatabase, jsonString, cb) {
               }
             }
           };
-          request.onerror = (event) => {
-            console.log(event);
-          };
+          request.onerror = (event) => cb(event);
         });
       } else {
         if (importObject[storeName]) {
@@ -120,10 +136,18 @@ function importFromJsonString(idbDatabase, jsonString, cb) {
  * The object stores will still exist but will be empty.
  *
  * @param {IDBDatabase} idbDatabase - to delete all data from
- * @param {function(Object)} cb - callback with signature (error), where error is null on success
- * @return {void}
+ * @param {function(Object)} [cb] - optional callback (error); if omitted, returns a Promise
+ * @return {void|Promise<void>}
  */
 function clearDatabase(idbDatabase, cb) {
+  if (typeof cb !== 'function') {
+    return new Promise(function(resolve, reject) {
+      clearDatabase(idbDatabase, function(err) {
+        if (err) reject(err); else resolve();
+      });
+    });
+  }
+
   const objectStoreNamesSet = new Set(idbDatabase.objectStoreNames);
   const size = objectStoreNamesSet.size;
   if (size === 0) {
@@ -132,7 +156,7 @@ function clearDatabase(idbDatabase, cb) {
     const objectStoreNames = Array.from(objectStoreNamesSet);
     const transaction = idbDatabase.transaction(
         objectStoreNames,
-        'readwrite'
+        'readwrite',
     );
     transaction.onerror = (event) => cb(event);
 

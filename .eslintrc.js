@@ -9,7 +9,7 @@ module.exports = {
     'google',
   ],
   'parserOptions': {
-    'ecmaVersion': 6,
+    'ecmaVersion': 2020,
     'sourceType': 'module',
     'ecmaFeatures': {
     },

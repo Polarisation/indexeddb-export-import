@@ -24,21 +24,25 @@ db.version(1).stores({
   things: 'id++, thing_name, thing_description',
 });
 
-await db.open();
-const idbDatabase = db.backendDB(); // get native IDBDatabase object from Dexie wrapper
+async function run() {
+  await db.open();
+  const idbDatabase = db.backendDB(); // get native IDBDatabase object from Dexie wrapper
 
-try {
-  const jsonString = await IDBExportImport.exportToJsonString(idbDatabase);
-  console.log('Exported as JSON: ' + jsonString);
+  try {
+    const jsonString = await IDBExportImport.exportToJsonString(idbDatabase);
+    console.log('Exported as JSON: ' + jsonString);
 
-  await IDBExportImport.clearDatabase(idbDatabase);
-  console.log('Cleared the database');
+    await IDBExportImport.clearDatabase(idbDatabase);
+    console.log('Cleared the database');
 
-  await IDBExportImport.importFromJsonString(idbDatabase, jsonString);
-  console.log('Imported data successfully');
-} catch (err) {
-  console.error(err);
+    await IDBExportImport.importFromJsonString(idbDatabase, jsonString);
+    console.log('Imported data successfully');
+  } catch (err) {
+    console.error(err);
+  }
 }
+
+run();
 ```
 
 ### Callback style

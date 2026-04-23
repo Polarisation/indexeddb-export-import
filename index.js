@@ -8,7 +8,7 @@
  * @return {void|Promise<string>}
  */
 function exportToJsonString(idbDatabase, cb) {
-  if (!cb) {
+  if (typeof cb !== 'function') {
     return new Promise(function(resolve, reject) {
       exportToJsonString(idbDatabase, function(err, result) {
         if (err) reject(err); else resolve(result);
@@ -62,7 +62,7 @@ function exportToJsonString(idbDatabase, cb) {
  * @return {void|Promise<void>}
  */
 function importFromJsonString(idbDatabase, jsonString, cb) {
-  if (!cb) {
+  if (typeof cb !== 'function') {
     return new Promise(function(resolve, reject) {
       importFromJsonString(idbDatabase, jsonString, function(err) {
         if (err) reject(err); else resolve();
@@ -115,9 +115,7 @@ function importFromJsonString(idbDatabase, jsonString, cb) {
               }
             }
           };
-          request.onerror = (event) => {
-            console.log(event);
-          };
+          request.onerror = (event) => cb(event);
         });
       } else {
         if (importObject[storeName]) {
@@ -142,7 +140,7 @@ function importFromJsonString(idbDatabase, jsonString, cb) {
  * @return {void|Promise<void>}
  */
 function clearDatabase(idbDatabase, cb) {
-  if (!cb) {
+  if (typeof cb !== 'function') {
     return new Promise(function(resolve, reject) {
       clearDatabase(idbDatabase, function(err) {
         if (err) reject(err); else resolve();

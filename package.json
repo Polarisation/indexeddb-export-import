@@ -10,7 +10,8 @@
   ],
   "scripts": {
     "test": "mocha",
-    "lint": "eslint . --ext .js"
+    "lint": "eslint . --ext .js",
+    "prepublishOnly": "npm run lint && npm test"
   },
   "repository": {
     "type": "git",

@@ -3,9 +3,13 @@
 ## v2.2.0
 
  - All three functions now support Promise/async-await: omit the callback to receive a Promise
+ - Fix: `request.onerror` during import now surfaces errors to the caller instead of logging to console
+ - Fix: callback detection uses `typeof cb !== 'function'` to avoid treating `null`/`false` as a missing callback
  - Add TypeScript type definitions (`index.d.ts`)
+ - Add `prepublishOnly` script to ensure lint and tests pass before publishing
  - Upgrade dev dependencies: dexie 3→4, fake-indexeddb 3→6, mocha 9→11, eslint 8.2→8.57
- - Replace defunct Travis CI and CircleCI configs with GitHub Actions (Node 18/20/22/24 matrix)
+ - Replace defunct Travis CI and CircleCI configs with GitHub Actions (Node 20/22/24 matrix)
+ - Switch from `.npmignore` to `files` allowlist in `package.json`
 
 ## v2.1.5
 

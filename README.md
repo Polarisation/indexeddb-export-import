@@ -115,7 +115,7 @@ Clears a database of all data. The object stores themselves are preserved.
 $ npm install indexeddb-export-import
 ```
 
-> **Note for contributors:** running the test suite requires Node ≥ 20 (Dexie 4 does not support Node 18). The library itself has no runtime dependencies and works on Node ≥ 12.
+> **Note for contributors:** running the test suite requires Node ≥ 20. The library itself has no runtime dependencies and works on Node ≥ 12.
 
 ## License
 

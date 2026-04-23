@@ -1,5 +1,12 @@
 # Changelog
 
+## v2.2.0
+
+ - All three functions now support Promise/async-await: omit the callback to receive a Promise
+ - Add TypeScript type definitions (`index.d.ts`)
+ - Upgrade dev dependencies: dexie 3→4, fake-indexeddb 3→6, mocha 9→11, eslint 8.2→8.57
+ - Replace defunct Travis CI and CircleCI configs with GitHub Actions (Node 18/20/22/24 matrix)
+
 ## v2.1.5
 
 - Fix bug when import JSON is missing keys that are present as object store names (#25).
